@@ -187,7 +187,7 @@ public class MusicLibraryCLI {
 			System.out.println("No albums related to '" + query + "' were found, please re-enter.");
 		}
 	}
-/*****************************************************************************************/
+
 	private void rateSong() {
 		System.out.print("Please enter the name of the song you want to rate: ");
 		String title = scanner.nextLine();
