@@ -1,5 +1,3 @@
-package la1;
-
 import java.io.*;
 import java.util.*;
 
@@ -52,5 +50,50 @@ public class MusicStore {
 		}
 	}
 
+	// **Search song by title**
+	public List<song> searchSongByTitle(String title) {
+		List<song> matchingSongs = new ArrayList<>();
+		for (Album album : albums.values()) {
+			for (String songTitle : album.getSongs()) {
+				if (songTitle.equalsIgnoreCase(title)) {
+					matchingSongs.add(new song(songTitle, album.getArtist(), album.getTitle()));
+				}
+			}
+		}
 
+		return matchingSongs;
+	}
+
+	// **Search song by artist**
+	public List<song> findSongsByArtist(String artist) {
+		List<song> matchingSongs = new ArrayList<>();
+		for (Album album : albums.values()) {
+			if (album.getArtist().equalsIgnoreCase(artist)) {
+				for (String songTitle : album.getSongs()) {
+					matchingSongs.add(new song(songTitle, artist, album.getTitle()));
+				}
+			}
+		}
+
+		return matchingSongs;
+	}
+
+	// **Search album by artist**
+	public List<Album> searchAlbumsByArtist(String artist) {
+		List<Album> matchingAlbums = new ArrayList<>();
+		for (Album album : albums.values()) {
+			if (album.getArtist().equalsIgnoreCase(artist)) {
+				matchingAlbums.add(album);
+			}
+		}
+
+		return matchingAlbums;
+	}
+
+	// **Search album by title**
+	public Album getAlbum(final String title) {
+		Album album = albums.get(title);
+
+		return album;
+	}
 }
