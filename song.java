@@ -1,5 +1,3 @@
-package la1;
-
 public class song {
 	private final String title;
 	private final String artist;
