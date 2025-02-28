@@ -100,7 +100,7 @@ public class MusicLibraryCLI {
 					String favoriteChoice = scanner.nextLine().trim().toLowerCase();
 					if (favoriteChoice.equals("y")) {
 						library.rateSong(selectedSong.getTitle(), 5);
-						System.out.println("❤️ Favorite Song:" + selectedSong.getTitle());
+						System.out.println("Favorite Song:" + selectedSong.getTitle());
 					}
 					return; // Exit the loop after adding successfully
 				} else {
@@ -171,7 +171,7 @@ public class MusicLibraryCLI {
 				library.addAlbumToLibrary(album.getTitle());
 				System.out.println("Added album " + album.getTitle() + " to your Library!");
 
-				// 🔹 **New Add: ask if want to favorite the songs**
+				// **New Add: ask if want to favorite the songs**
 				System.out.print("Do you want to add the songs to Favorite? (y/n):");
 				String favoriteChoice = scanner.nextLine().trim().toLowerCase();
 				if (favoriteChoice.equals("y")) {
