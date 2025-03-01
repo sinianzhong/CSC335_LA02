@@ -3,6 +3,14 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 public class AllTests {
+	// **Test toString**
+	@Test
+	void testtoString() {
+		song song = new song("Uptown Funk", "Mark Ronson", "Uptown Special");
+		Album album = new Album("Uptown Special", "Mark Ronson", "Funk", 2015, new List<String> {"Uptown Funk"});
+		assertEquals("Uptown Funk - Mark Ronson (Album: Uptown Special)", song.toString());
+		assertEquals("Uptown Special - Mark Ronson (2015)[Funk]", album.toString());
+	}
 
 	// **Test MusicStore**
 	@Test
