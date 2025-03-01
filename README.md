@@ -1,2 +1,2 @@
 # CSC335_LA01
-N/A
+Sinian Zhong & Zeyi Hao
