@@ -5,12 +5,14 @@ import java.util.List;
 public class AllTests {
 	// **Test toString**
 	@Test
-	void testtoString() {
-		song song = new song("Uptown Funk", "Mark Ronson", "Uptown Special");
-		Album album = new Album("Uptown Special", "Mark Ronson", "Funk", 2015, new List<String> {"Uptown Funk"});
-		assertEquals("Uptown Funk - Mark Ronson (Album: Uptown Special)", song.toString());
-		assertEquals("Uptown Special - Mark Ronson (2015)[Funk]", album.toString());
-	}
+	 void testtoString() {
+	  song song = new song("Uptown Funk", "Mark Ronson", "Uptown Special");
+	  Album album = new Album("Uptown Special", "Mark Ronson", "Funk", 2015, 
+              List.of("Uptown Funk"));  
+	  System.out.print(album.toString());
+	  assertEquals("Uptown Funk - Mark Ronson (Album: Uptown Special)", song.toString());
+	  assertEquals("Uptown Special - Mark Ronson (2015) [Funk]", album.toString());
+	 }
 
 	// **Test MusicStore**
 	@Test
@@ -21,7 +23,7 @@ public class AllTests {
 		assertFalse(songs.isEmpty());
 		assertEquals("Lullaby", songs.get(0).getTitle());
 	}
-
+	
 	@Test
 	void testSearchSongByTitle_NotFound() {
 		MusicStore store = new MusicStore();
