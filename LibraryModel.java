@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class LibraryModel {
 	private final MusicStore store; // Link to MusicStore
 	private final Set<song> library; // Songs user added
