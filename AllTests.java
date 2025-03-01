@@ -1,20 +1,8 @@
-package la1;
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 
 public class AllTests {
-
-	// **Test MusicStore**
-	@Test
-	void testSearchSongByTitle_Found() {
-		MusicStore store = new MusicStore();
-
-		List<song> songs = store.searchSongByTitle("Lullaby");
-		assertFalse(songs.isEmpty());
-		assertEquals("Lullaby", songs.get(0).getTitle());
-	}
 	// **Test toString**
 	@Test
 	 void testtoString() {
@@ -25,6 +13,17 @@ public class AllTests {
 	  assertEquals("Uptown Funk - Mark Ronson (Album: Uptown Special)", song.toString());
 	  assertEquals("Uptown Special - Mark Ronson (2015) [Funk]", album.toString());
 	 }
+
+	// **Test MusicStore**
+	@Test
+	void testSearchSongByTitle_Found() {
+		MusicStore store = new MusicStore();
+
+		List<song> songs = store.searchSongByTitle("Lullaby");
+		assertFalse(songs.isEmpty());
+		assertEquals("Lullaby", songs.get(0).getTitle());
+	}
+	
 	@Test
 	void testSearchSongByTitle_NotFound() {
 		MusicStore store = new MusicStore();
