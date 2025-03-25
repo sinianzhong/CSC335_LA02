@@ -48,6 +48,42 @@ public class LibraryStorage {
         }
         return library;
     }
+// Save the user's library
+    public static void saveLibrary(String username, LibraryModel library) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter("library_" + username + ".txt"))) {
+            // Save songs
+            for (String songTitle : library.getAllSongTitles()) {
+                pw.println("SONG:" + songTitle);
+            }
+            // Save albums
+            for (String albumTitle : library.getAllAlbums()) {
+                pw.println("ALBUM:" + albumTitle);
+            }
+            // Save Favorites
+            for (song s : library.getFavoriteSongs()) {
+                pw.println("FAVORITE:" + s.getTitle());  
+            }
+            // Save recent plays
+            pw.write("RECENT_PLAYS:\n");
+            for (String title : library.getRecentPlays()) {
+                pw.write(title + "\n");
+            }
+            // Save most played
+            pw.write("MOST_PLAYED:\n");
+            for (String title : library.getMostPlayed()) {
+                pw.write(title + "\n");
+            }
+            // Save Playlists
+            for (Map.Entry<String, List<song>> entry : library.getPlaylists().entrySet()) {
+                pw.write("PLAYLIST:" + entry.getKey() + "\n");
+                for (song s : entry.getValue()) {
+                    pw.write(s.getTitle() + "|" + s.getArtist() + "|" + s.getAlbum() + "|" + s.getGenre() + "\n");
+                }
+            }
 
+        } catch (IOException e) {
+            System.out.println("Failed to save library for " + username);
+        }
+    }
 }
 
