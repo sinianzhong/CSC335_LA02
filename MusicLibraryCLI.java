@@ -436,11 +436,217 @@ public class MusicLibraryCLI {
 	        System.out.println("There are less than 10 songs in this genre, and cannot generate playlist!");
 	    }
 	}
+// Search songs in library
+	private void searchSongByTitle() {
+	    System.out.print("Please enter the name of the song:");
+	    String title = scanner.nextLine();
+	    List<String> results = library.searchSongsByTitle(title);
+	    if (results.isEmpty()) {
+	        System.out.println("No songs found");
+	    } else {
+	        for (String s : results) {
+	            System.out.println(s);
+	        }
+	    }
+	}
+	private void searchSongByArtist() {
+	    System.out.print("Please enter the artist of the song:");
+	    String artist = scanner.nextLine();
+	    List<String> results = library.findSongsByArtist(artist);
+	    if (results.isEmpty()) {
+	        System.out.println("No related songs found");
+	    } else {
+	        for (String s : results) {
+	            System.out.println(s);
+	        }
+	    }
+	}
 
+	// Search albums in library
+	private void searchAlbumByTitle() {
+	    System.out.print("Please enter the name of the album:");
+	    String album = scanner.nextLine();
+	    List<String> results = library.searchAlbumsByTitle(album);
+	    if (results.isEmpty()) {
+	        System.out.println("No albums found");
+	    } else {
+	        for (String s : results) {
+	            System.out.println(s);
+	        }
+	    }
+	}
+	private void searchAlbumByArtist() {
+	    System.out.print("Please enter the artist of the album:");
+	    String artist = scanner.nextLine();
+	    List<String> results = library.findAlbumsByArtist(artist);
+	    if (results.isEmpty()) {
+	        System.out.println("No related albums found");
+	    } else {
+	        for (String s : results) {
+	            System.out.println(s);
+	        }
+	    }
+	}
+
+	// Search playlist by name
+	private void searchPlaylistByName() {
+	    System.out.print("Please enter the name of the Playlist:");
+	    String name = scanner.nextLine();
+	    if (library.getAllPlaylistNames().contains(name)) {
+	        System.out.println("Found Playlist: " + name);
+	        List<String> songs =library.viewPlaylist(name);
+	        for (String s : songs) {
+	            System.out.println(s);
+	        }
+	    } else {
+	        System.out.println("No Playlists found");
+	    }
+	}
+
+	// Remove song in the Playlist
+	private void removeSongFromPlaylist() {
+	    System.out.print("Please enter the name of the Playlist:");
+	    String listName = scanner.nextLine();
+	    System.out.print("Please enter the name of the song:");
+	    String songTitle = scanner.nextLine();
+	    boolean removed = library.removeSongFromPlaylist(listName, songTitle);
+	    if (removed) {
+	        System.out.println("Successfully removed");
+	    } else {
+	        System.out.println("No songs found");
+	    }
+	}
+
+	// View the content of the Playlist
+	private void viewPlaylist() {
+	    System.out.print("Please enter the name of the Playlist:");
+	    String listName = scanner.nextLine();
+	    List<String> songs = library.viewPlaylist(listName);
+	    if (songs.isEmpty()) {
+	        System.out.println("Playlist is emtpy or not exist");
+	    } else {
+	        for (String s : songs) {
+	            System.out.println(s);
+	        }
+	    }
+	}
+
+	// Dispay all playlist
+	private void viewAllPlaylists() {
+	    Set<String> playlists = library.getAllPlaylistNames();
+	    if (playlists.isEmpty()) {
+	        System.out.println("No Playlist exits");
+	    } else {
+	        System.out.println("Playlists:");
+	        for (String s : playlists) {
+	            System.out.println(s);
+	        }
+	    }
+	}
+
+	private void playRandomSong() {
+	    String playedSong = library.playRandomSong();
+	    if (playedSong != null) {
+	        System.out.println("Ramdomly playing: " + playedSong);
+	    } else {
+	        System.out.println("Your library is empty and can't shuffle!");
+	    }
+	}
+	
+	private void shuffleAndPlayLibrary() {
+	    library.shuffleLibrary();
+	    System.out.println("Shuffle all songs:");
+	    for (song s : library) {  // Support for-each
+	        System.out.println("Playing: " + s.getTitle());
+	    }
+	}
+
+	private void shuffleAndPlayPlaylist() {
+	    System.out.print("Please enter the name of the Playlist you want to shuffle:");
+	    String playlistName = scanner.nextLine();
+
+	    library.shufflePlaylist(playlistName);
+	    List<song> playlist = library.getPlaylist(playlistName);
+
+	    if (playlist == null || playlist.isEmpty()) {
+	        System.out.println("Playlist is emtpy or not exist");
+	        return;
+	    }
+
+	    System.out.println("Shuffling Playlist【" + playlistName + "】：");
+	    for (song s : playlist) {
+	        System.out.println("Playing: " + s.getTitle());
+	    }
+	}
+
+	private void searchSongsByGenre() {
+	    System.out.print("Please enter the Genre:");
+	    String genre = scanner.nextLine();
+	    List<song> songs = library.searchSongsByGenre(genre);
+	    if (songs.isEmpty()) {
+	        System.out.println("No song found for this Genre.");
+	    } else {
+	        for (song s : songs) {
+	            System.out.println(s.getTitle() + " - " + s.getArtist());
+	        }
+	    }
+	}
 	public static void main(String[] args) {
-		MusicStore store = new MusicStore();
-		LibraryModel library = new LibraryModel(store);
-		MusicLibraryCLI cli = new MusicLibraryCLI(library, store);
-		cli.start();
+	    UserManager userManager = new UserManager();
+	    Scanner scanner = new Scanner(System.in);
+	    User currentUser = null;
+	    LibraryModel userLibrary = null;
+	    MusicStore store = new MusicStore();
+
+	    while (true) {
+	        System.out.println("1. Register  2. Login");
+	        System.out.print("Please enter option (1 or 2):");
+
+	        int choice = -1;
+	        try {
+	            choice = Integer.parseInt(scanner.nextLine());
+	        } catch (NumberFormatException e) {
+	            System.out.println("Invalid input! Please enter the number 1 or 2.\n");
+	            continue;
+	        }
+
+	        if (choice == 1) {
+	            System.out.print("Enter new username: ");
+	            String username = scanner.nextLine();
+	            System.out.print("Enter password: ");
+	            String password = scanner.nextLine();
+	            if (userManager.registerUser(username, password)) {
+	                System.out.println("Register success! Now please login.");
+	            } else {
+	                System.out.println("Username already exists!");
+	            }
+	        } else if (choice == 2) {
+	            System.out.print("Username: ");
+	            String username = scanner.nextLine();
+	            System.out.print("Password: ");
+	            String password = scanner.nextLine();
+	            currentUser = userManager.login(username, password);
+	            if (currentUser != null) {
+	                System.out.println("Welcome, " + currentUser.getUsername());
+	                break;
+	            } else {
+	                System.out.println("Login failed! Please try again.");
+	            }
+	        } else {
+	            System.out.println("Invalid input! Please enter the number 1 or 2.\n");
+	        }
+	    
+	    }
+
+	    // After successful login: Load the user's library
+	    userLibrary = LibraryStorage.loadLibrary(currentUser.getUsername(), store);
+
+	    // Start the CLI, operating on the current user's library
+	    MusicLibraryCLI cli = new MusicLibraryCLI(userLibrary, store);
+	    cli.start();
+
+	    // After the user exits the CLI, save the library
+	    LibraryStorage.saveLibrary(currentUser.getUsername(), userLibrary);
+	    System.out.println("Library saved. Goodbye!");
 	}
 }
