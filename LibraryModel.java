@@ -17,7 +17,7 @@ public class LibraryModel {
 		this.ratings = new HashMap<>();
 	}
 
-		public boolean containsSong(String title) {
+	public boolean containsSong(String title) {
 	    for (song s : library) {
 	        if (s.getTitle().equals(title)) return true;
 	    }
