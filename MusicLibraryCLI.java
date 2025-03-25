@@ -436,7 +436,8 @@ public class MusicLibraryCLI {
 	        System.out.println("There are less than 10 songs in this genre, and cannot generate playlist!");
 	    }
 	}
-// Search songs in library
+	
+	// Search songs in library
 	private void searchSongByTitle() {
 	    System.out.print("Please enter the name of the song:");
 	    String title = scanner.nextLine();
@@ -591,6 +592,9 @@ public class MusicLibraryCLI {
 	        }
 	    }
 	}
+
+/* LA_02 New Methods END */
+	
 	public static void main(String[] args) {
 	    UserManager userManager = new UserManager();
 	    Scanner scanner = new Scanner(System.in);
