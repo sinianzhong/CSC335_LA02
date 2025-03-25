@@ -1,5 +1,6 @@
 # CSC335_LA01
-
+We are using eclipse to program underline, because we are living together.
+And then will commit them together.
 First, is Junit test part, the last 2 test for create user test can only work first time
 second, usage of jar file
 To use jar file, you need first to move jar file to a folder with these songs txt file.
