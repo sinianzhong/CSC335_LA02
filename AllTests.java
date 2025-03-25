@@ -1,5 +1,3 @@
-package la1;
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +7,16 @@ import java.util.List;
 import java.util.Set;
 
 public class AllTests {
+	// **Test toString**
+	@Test
+	 void testtoString() {
+	  song song = new song("Uptown Funk", "Mark Ronson", "Uptown Special");
+	  Album album = new Album("Uptown Special", "Mark Ronson", "Funk", 2015, 
+              List.of("Uptown Funk"));  
+	  System.out.print(album.toString());
+	  assertEquals("Uptown Funk - Mark Ronson (Album: Uptown Special)", song.toString());
+	  assertEquals("Uptown Special - Mark Ronson (2015) [Funk]", album.toString());
+	 }
 
 	// **Test MusicStore**
 	@Test
@@ -18,16 +26,6 @@ public class AllTests {
 		List<song> songs = store.searchSongByTitle("Lullaby");
 		assertFalse(songs.isEmpty());
 		assertEquals("Lullaby", songs.get(0).getTitle());
-	}
-
-	// **Test toString**
-	@Test
-	void testtoString() {
-		song song = new song("Uptown Funk", "Mark Ronson", "Uptown Special");
-		Album album = new Album("Uptown Special", "Mark Ronson", "Funk", 2015, List.of("Uptown Funk"));
-		System.out.print(album.toString());
-		assertEquals("Uptown Funk - Mark Ronson (Album: Uptown Special)", song.toString());
-		assertEquals("Uptown Special - Mark Ronson (2015) [Funk]", album.toString());
 	}
 
 	@Test
