@@ -1,4 +1,6 @@
-public class LibraryModel {
+import java.util.*;
+
+public class LibraryModel implements Iterable<song> {
 	private final MusicStore store; // Link to MusicStore
 	private final Set<song> library; // Songs user added
 	private final Set<Album> albumLibrary; // Albums user added
@@ -17,7 +19,6 @@ public class LibraryModel {
 		this.ratings = new HashMap<>();
 	}
 
-/* LA_02 New Methods */
 	public boolean containsSong(String title) {
 	    for (song s : library) {
 	        if (s.getTitle().equals(title)) return true;
@@ -64,7 +65,7 @@ public class LibraryModel {
 	    }
 	    return result;
 	}
-	
+
 	public boolean removeSongFromPlaylist(String playlistName, String songTitle) {
 	    List<song> playlist = playlists.get(playlistName);
 	    if (playlist != null) {
@@ -73,7 +74,6 @@ public class LibraryModel {
 	    return false;
 	}
 
-	
 	public List<String> viewPlaylist(String playlistName) {
 	    List<String> result = new ArrayList<>();
 	    List<song> playlist = playlists.get(playlistName);
@@ -107,9 +107,9 @@ public class LibraryModel {
 	    }
 	    return false; // Not found
 	}
-/* LA_02 New Methods */
 
-/* LA_01 */
+
+
 	// **Add song to user library**
 	public boolean addSongToLibrary(String title) {
 		List<song> songs = store.searchSongByTitle(title);
@@ -210,6 +210,122 @@ public class LibraryModel {
 		return songTitles;
 	}
 
+    public boolean removeSong(String title) {
+        song target = null;
+        for (song s : library) {
+            if (s.getTitle().equals(title)) {
+                target = s;
+                break;
+            }
+        }
+        if (target != null) {
+            library.remove(target);
+            favorites.remove(target);
+            ratings.remove(target);
+            playCount.remove(title);
+            recentPlays.remove(title);
+            return true;
+        }
+        return false;
+    }
+
+	// Generate recent played Playlist
+	public void generateRecentPlaysPlaylist() {
+	List<song> result = new ArrayList<>();
+	for (String title : recentPlays) {
+		for (song s : library) {
+			if (s.getTitle().equalsIgnoreCase(title)) {
+				result.add(s);
+				break;
+			}
+		}
+	}
+	playlists.put("RecentPlays", result);
+	}
+
+    public List<String> getRecentPlays() {
+        return new ArrayList<>(recentPlays);
+    }
+
+	// Generate most played Playlist
+	public void generateMostPlayedPlaylist() {
+		List<song> result = new ArrayList<>();
+		List<Map.Entry<String, Integer>> sorted = new ArrayList<>(playCount.entrySet());
+		sorted.sort((a, b) -> b.getValue() - a.getValue());
+		int count = 0;
+		for (Map.Entry<String, Integer> entry : sorted) {
+			if (count >= 10) break;
+			for (song s : library) {
+				if (s.getTitle().equalsIgnoreCase(entry.getKey())) {
+					result.add(s);
+					count++;
+					break;
+				}
+			}
+		}
+		playlists.put("MostPlayed", result);
+	}
+
+    public List<String> getMostPlayed() {
+        List<song> resultList = new ArrayList<>(library);
+
+        resultList.sort((s1, s2) -> 
+            playCount.getOrDefault(s2.getTitle(), 0) - playCount.getOrDefault(s1.getTitle(), 0)
+        );
+
+        List<String> topPlayed = new ArrayList<>();
+        int count = 0;
+        for (song s : resultList) {
+            if (count >= 10) break;
+            topPlayed.add(s.getTitle());
+            count++;
+        }
+        return topPlayed;
+    }
+
+    public int getRating(String title) {
+        for (Map.Entry<song, Integer> entry : ratings.entrySet()) {
+            if (entry.getKey().getTitle().equalsIgnoreCase(title)) {
+                return entry.getValue();
+            }
+        }
+        return 0;
+    }
+
+    public boolean generateFavoritePlaylist() {
+        if (favorites.isEmpty()) return false;
+        playlists.put("Favorites", new ArrayList<>(favorites)); // Directly refer to the same song
+        return true;
+    }
+
+    public boolean generateTopRatedPlaylist() {
+        List<song> result = new ArrayList<>();
+        for (song s : library) {
+            if (getRating(s.getTitle()) >= 4) {
+                result.add(s);
+            }
+        }
+        if (!result.isEmpty()) {
+            playlists.put("TopRated", result);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean generateGenrePlaylist(String genre) {
+        List<song> result = new ArrayList<>();
+        for (song s : library) {
+            if (s.getGenre() != null && s.getGenre().equalsIgnoreCase(genre)) {
+                result.add(s);
+            }
+        }
+        if (!result.isEmpty()) {
+            playlists.put(genre, result);
+            return true;
+        }
+        return false;
+    }
+
 	// **Get all artists**
 	public List<String> getAllArtists() {
 		List<String> artists = new ArrayList<>();
@@ -241,4 +357,55 @@ public class LibraryModel {
 	public List<song> getFavoriteSongs() {
 		return new ArrayList<>(favorites);
 	}
+	
+	public String playRandomSong() {
+	    if (library.isEmpty()) {
+	        return null;
+	    }
+	    List<song> songList = new ArrayList<>(library);
+	    Random random = new Random();
+	    song randomSong = songList.get(random.nextInt(songList.size()));
+
+	    // Normal playback logic (counting and joining recent plays)
+	    playCount.put(randomSong.getTitle(), playCount.getOrDefault(randomSong.getTitle(), 0) + 1);
+	    recentPlays.remove(randomSong.getTitle());
+	    recentPlays.add(0, randomSong.getTitle());
+	    if (recentPlays.size() > 10) {
+	        recentPlays.remove(recentPlays.size() - 1);
+	    }
+	    return randomSong.getTitle();
+	}
+	
+	public List<song> searchSongsByGenre(String genre) {
+	    List<song> result = new ArrayList<>();
+	    for (song s : library) {
+	        if (s.getGenre() != null && s.getGenre().equalsIgnoreCase(genre)) {
+	            result.add(s);
+	        }
+	    }
+	    return result;
+	}
+
+	public void shuffleLibrary() {
+	    List<song> songList = new ArrayList<>(library);
+	    Collections.shuffle(songList);
+	    library.clear();
+	    library.addAll(songList);  // Empty it directly and add it back in order
+	}
+	
+	public void shufflePlaylist(String playlistName) {
+	    List<song> playlist = playlists.get(playlistName);
+	    if (playlist != null) {
+	        Collections.shuffle(playlist); // Randomly shuffle
+	    }
+	}
+
+	@Override
+	public Iterator<song> iterator() {
+	    return library.iterator();  // Support for-each
+	}
+	public Map<String, List<song>> getPlaylists() {
+	    return playlists;
+	}
+
 }
