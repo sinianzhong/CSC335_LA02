@@ -63,7 +63,7 @@ public class LibraryModel {
 	    }
 	    return result;
 	}
-
+	
 	public boolean removeSongFromPlaylist(String playlistName, String songTitle) {
 	    List<song> playlist = playlists.get(playlistName);
 	    if (playlist != null) {
@@ -73,6 +73,39 @@ public class LibraryModel {
 	}
 
 	
+	public List<String> viewPlaylist(String playlistName) {
+	    List<String> result = new ArrayList<>();
+	    List<song> playlist = playlists.get(playlistName);
+	    if (playlist != null) {
+	        for (song s : playlist) {
+	            result.add(s.getTitle() + " - " + s.getArtist());
+	        }
+	    }
+	    return result;
+	}
+
+	public Set<String> getAllPlaylistNames() {
+	    return playlists.keySet();
+	}
+
+	public boolean playSong(String songTitle) {
+	    // Traverse the library to find if there is a match (ignore case)
+	    for (song s : library) {
+	        if (s.getTitle().equalsIgnoreCase(songTitle)) {
+	            String matchedTitle = s.getTitle();  // Keep the original format
+
+	            playCount.put(matchedTitle, playCount.getOrDefault(matchedTitle, 0) + 1);
+	            recentPlays.remove(matchedTitle); // If it exists, delete it first
+	            recentPlays.add(0, matchedTitle); // Add to the top
+
+	            if (recentPlays.size() > 10) {
+	                recentPlays.remove(recentPlays.size() - 1); // More than 10 songs, delete the last one
+	            }
+	            return true;  // Successfully played
+	        }
+	    }
+	    return false; // Not found
+	}
 
 	// **Add song to user library**
 	public boolean addSongToLibrary(String title) {
