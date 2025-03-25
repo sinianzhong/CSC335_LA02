@@ -5,6 +5,8 @@ public class LibraryModel {
 	private final Map<String, List<song>> playlists; // Playlists
 	private final Set<song> favorites; // Favorites
 	private final Map<song, Integer> ratings; // Rating
+	private Map<String, Integer> playCount = new HashMap<>();
+	private ArrayList<String> recentPlays = new ArrayList<>();
 
 	public LibraryModel(MusicStore store) {
 		this.store = store;
@@ -14,6 +16,63 @@ public class LibraryModel {
 		this.favorites = new HashSet<>();
 		this.ratings = new HashMap<>();
 	}
+
+		public boolean containsSong(String title) {
+	    for (song s : library) {
+	        if (s.getTitle().equals(title)) return true;
+	    }
+	    return false;
+	}
+
+	public List<String> searchSongsByTitle(String title) {
+	    List<String> result = new ArrayList<>();
+	    for (song s : library) {
+	        if (s.getTitle().equalsIgnoreCase(title)) {
+	            result.add(s.getTitle() + " - " + s.getArtist());
+	        }
+	    }
+	    return result;
+	}
+
+	public List<String> findSongsByArtist(String artist) {
+	    List<String> result = new ArrayList<>();
+	    for (song s : library) {
+	        if (s.getArtist().equalsIgnoreCase(artist)) {
+	            result.add(s.getTitle() + " - " + s.getArtist());
+	        }
+	    }
+	    return result;
+	}
+
+	public List<String> searchAlbumsByTitle(String albumTitle) {
+	    List<String> result = new ArrayList<>();
+	    for (Album album : albumLibrary) {
+	        if (album.getTitle().equalsIgnoreCase(albumTitle)) {
+	            result.add(album.getTitle());
+	        }
+	    }
+	    return result;
+	}
+
+	public List<String> findAlbumsByArtist(String artist) {
+	    List<String> result = new ArrayList<>();
+	    for (Album album : albumLibrary) {
+	        if (album.getArtist().equalsIgnoreCase(artist)) {
+	            result.add(album.getTitle());
+	        }
+	    }
+	    return result;
+	}
+
+	public boolean removeSongFromPlaylist(String playlistName, String songTitle) {
+	    List<song> playlist = playlists.get(playlistName);
+	    if (playlist != null) {
+	        return playlist.removeIf(s -> s.getTitle().equalsIgnoreCase(songTitle));
+	    }
+	    return false;
+	}
+
+	
 
 	// **Add song to user library**
 	public boolean addSongToLibrary(String title) {
