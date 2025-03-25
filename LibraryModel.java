@@ -319,7 +319,7 @@ public class LibraryModel implements Iterable<song> {
                 result.add(s);
             }
         }
-        if (!result.isEmpty()) {
+        if (result.size() >= 10) {
             playlists.put(genre, result);
             return true;
         }
