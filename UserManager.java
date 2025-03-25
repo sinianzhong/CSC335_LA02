@@ -1,5 +1,3 @@
-package la1;
-
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
