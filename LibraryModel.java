@@ -17,6 +17,7 @@ public class LibraryModel {
 		this.ratings = new HashMap<>();
 	}
 
+/* LA_02 New Methods */
 	public boolean containsSong(String title) {
 	    for (song s : library) {
 	        if (s.getTitle().equals(title)) return true;
@@ -106,7 +107,9 @@ public class LibraryModel {
 	    }
 	    return false; // Not found
 	}
+/* LA_02 New Methods */
 
+/* LA_01 */
 	// **Add song to user library**
 	public boolean addSongToLibrary(String title) {
 		List<song> songs = store.searchSongByTitle(title);
