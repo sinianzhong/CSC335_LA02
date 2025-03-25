@@ -56,7 +56,7 @@ public class MusicStore {
 		for (Album album : albums.values()) {
 			for (String songTitle : album.getSongs()) {
 				if (songTitle.equalsIgnoreCase(title)) {
-					matchingSongs.add(new song(songTitle, album.getArtist(), album.getTitle()));
+					matchingSongs.add(new song(songTitle, album.getArtist(), album.getTitle(), album.getGenre()));
 				}
 			}
 		}
@@ -70,7 +70,7 @@ public class MusicStore {
 		for (Album album : albums.values()) {
 			if (album.getArtist().equalsIgnoreCase(artist)) {
 				for (String songTitle : album.getSongs()) {
-					matchingSongs.add(new song(songTitle, artist, album.getTitle()));
+					matchingSongs.add(new song(songTitle, album.getArtist(), album.getTitle(), album.getGenre()));
 				}
 			}
 		}

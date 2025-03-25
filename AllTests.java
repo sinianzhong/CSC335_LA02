@@ -1,6 +1,10 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class AllTests {
 	// **Test toString**
@@ -23,12 +27,23 @@ public class AllTests {
 		assertFalse(songs.isEmpty());
 		assertEquals("Lullaby", songs.get(0).getTitle());
 	}
-	
+
 	@Test
 	void testSearchSongByTitle_NotFound() {
 		MusicStore store = new MusicStore();
 		List<song> songs = store.searchSongByTitle("Nonexistent Song");
 		assertTrue(songs.isEmpty());
+	}
+
+	@Test
+	public void testSongWithGenre() {
+
+		song s = new song("Yellow", "Coldplay", "Parachutes", "Alternative");
+
+		assertEquals("Yellow", s.getTitle());
+		assertEquals("Coldplay", s.getArtist());
+		assertEquals("Parachutes", s.getAlbum());
+		assertEquals("Alternative", s.getGenre());
 	}
 
 	@Test
@@ -219,16 +234,13 @@ public class AllTests {
 		library.addSongToLibrary("Lullaby");
 		library.createPlaylist("Chill Vibes");
 
-		// **The initial playlist should be empty**
 		assertTrue(library.getPlaylist("Chill Vibes").isEmpty());
 
-		// **Add song**
 		library.addSongToPlaylist("Chill Vibes", "Lullaby");
 		List<song> playlist = library.getPlaylist("Chill Vibes");
 		assertFalse(playlist.isEmpty());
 		assertEquals("Lullaby", playlist.get(0).getTitle());
 
-		// **Search for non-exist playlist**
 		assertTrue(library.getPlaylist("Unknown Playlist").isEmpty());
 	}
 
@@ -240,28 +252,247 @@ public class AllTests {
 		library.addSongToLibrary("Lullaby");
 		library.addSongToLibrary("Going Home");
 
-		// **The initial favorite should be empty**
 		assertTrue(library.getFavoriteSongs().isEmpty());
 
-		// **Add favorite**
 		assertTrue(library.markAsFavorite("Lullaby"));
 		List<song> favorites = library.getFavoriteSongs();
 		assertEquals(2, favorites.size());
 		assertEquals("Lullaby", favorites.get(0).getTitle());
 
-		// **Add favorite that doesn't exist should fail**
 		assertFalse(library.markAsFavorite("Unknown Song"));
 	}
 
 	@Test
 	void testAlbumGetGenreAndYear() {
 		Album album = new Album("Old Ideas", "Leonard Cohen", "Folk", 2012, List.of("Lullaby", "Going Home"));
-
-		// **Test getGenre()**
 		assertEquals("Folk", album.getGenre());
 
-		// **Test getYear()**
 		assertEquals(2012, album.getYear());
 	}
 
+	@Test
+	public void testGenerateFavoritePlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.rateSong("Clocks", 5);
+		assertTrue(library.generateFavoritePlaylist());
+		assertFalse(library.getPlaylist("Favorites").isEmpty());
+	}
+
+	@Test
+	public void testGenerateTopRatedPlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		assertTrue(library.addSongToLibrary("Lullaby"));
+		library.rateSong("Lullaby", 5);
+		assertTrue(library.generateTopRatedPlaylist());
+		assertFalse(library.getPlaylist("TopRated").isEmpty());
+	}
+
+	@Test
+	public void testGenerateGenrePlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		assertFalse(library.generateGenrePlaylist("Rock"));
+	}
+
+	@Test
+	public void testPlayRandomSong() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		String playedSong = library.playRandomSong();
+		assertNotNull(playedSong);
+	}
+
+	@Test
+	public void testLoginFail() {
+		UserManager userManager = new UserManager();
+		userManager.registerUser("testUser", "password123");
+		assertNull(userManager.login("testUser", "wrongPassword"));
+	}
+
+	@Test
+	public void testShuffleLibrary() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+
+		library.addSongToLibrary("rolling in the deep");
+		library.addSongToLibrary("Tired");
+		library.addSongToLibrary("My Same");
+
+		List<String> originalOrder = new ArrayList<>();
+		for (song s : library) {
+			originalOrder.add(s.getTitle());
+		}
+
+		library.shuffleLibrary();
+
+		List<String> shuffledOrder = new ArrayList<>();
+		for (song s : library) {
+			shuffledOrder.add(s.getTitle());
+		}
+
+		assertEquals(3, shuffledOrder.size());
+		assertTrue(originalOrder.containsAll(shuffledOrder));
+	}
+
+	@Test
+	public void testShufflePlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+
+		List<song> playlist = new ArrayList<>();
+		playlist.add(new song("Daydreamer", "Adele", "19"));
+		playlist.add(new song("Tired", "Adele", "19"));
+		playlist.add(new song("My Same", "Adele", "19"));
+		library.getPlaylists().put("TestPlaylist", playlist);
+
+		List<String> originalOrder = new ArrayList<>();
+		for (song s : library.getPlaylist("TestPlaylist")) {
+			originalOrder.add(s.getTitle());
+		}
+
+		library.shufflePlaylist("TestPlaylist");
+
+		List<String> shuffledOrder = new ArrayList<>();
+		for (song s : library.getPlaylist("TestPlaylist")) {
+			shuffledOrder.add(s.getTitle());
+		}
+
+		assertEquals(3, shuffledOrder.size());
+		assertTrue(originalOrder.containsAll(shuffledOrder));
+	}
+
+	@Test
+	public void testContainsSong() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		assertTrue(library.containsSong("Clocks"));
+		assertFalse(library.containsSong("Viva La Vida"));
+	}
+
+	@Test
+	public void testSearchSongsByTitle() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		List<String> result = library.searchSongsByTitle("Clocks");
+		assertFalse(result.isEmpty());
+	}
+
+	@Test
+	public void testFindSongsByArtist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		List<String> result = library.findSongsByArtist("Coldplay");
+		assertFalse(result.isEmpty());
+	}
+
+	@Test
+	public void testSearchAlbumsByTitle() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addAlbumToLibrary("A Rush of Blood to the Head");
+		List<String> result = library.searchAlbumsByTitle("A Rush of Blood to the Head");
+		assertFalse(result.isEmpty());
+	}
+
+	@Test
+	public void testFindAlbumsByArtist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addAlbumToLibrary("A Rush of Blood to the Head");
+		List<String> result = library.findAlbumsByArtist("Coldplay");
+		assertFalse(result.isEmpty());
+	}
+
+	@Test
+	public void testRemoveSongFromPlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		library.createPlaylist("MyPlaylist");
+		library.addSongToPlaylist("MyPlaylist", "Clocks");
+		assertTrue(library.removeSongFromPlaylist("MyPlaylist", "Clocks"));
+	}
+
+	@Test
+	public void testViewPlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		library.createPlaylist("MyPlaylist");
+		library.addSongToPlaylist("MyPlaylist", "Clocks");
+		List<String> playlist = library.viewPlaylist("MyPlaylist");
+		assertEquals(1, playlist.size());
+	}
+
+	@Test
+	public void testPlaySong() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		assertTrue(library.playSong("Clocks"));
+	}
+
+	@Test
+	public void testRemoveSong() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		assertTrue(library.removeSong("Clocks"));
+		assertFalse(library.containsSong("Clocks"));
+	}
+
+	@Test
+	public void testGetRecentPlays() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		library.playSong("Clocks");
+		List<String> recent = library.getRecentPlays();
+		assertFalse(recent.isEmpty());
+		assertEquals("Clocks", recent.get(0));
+	}
+
+	@Test
+	public void testGetMostPlayed() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		library.playSong("Clocks");
+		library.playSong("Clocks");
+		List<String> mostPlayed = library.getMostPlayed();
+		assertEquals("Clocks", mostPlayed.get(0));
+	}
+
+	@Test
+	public void testSearchSongsByGenre() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+		library.addSongToLibrary("Clocks");
+		List<song> result = library.searchSongsByGenre("Alternative Rock");
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testRegisterUserSuccess() {
+		UserManager userManager = new UserManager();
+		boolean result = userManager.registerUser("testUser11", "password123");
+		assertTrue(result);
+	}
+
+	@Test
+	public void testSaveUsersFileCreated() {
+		UserManager userManager = new UserManager();
+
+		userManager.registerUser("testUser6", "password456");
+
+		File file = new File("users.txt");
+		assertTrue(file.exists());
+	}
 }
