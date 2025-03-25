@@ -25,9 +25,26 @@ public class MusicLibraryCLI {
 			System.out.println("7. Displays all albums from Library");
 			System.out.println("8. Displays all artists from Library");
 			System.out.println("9. Add song in Library to Playlist");
-			System.out.println("10. Quit");
+			System.out.println("10. Play Songs (Stats)");
+			System.out.println("11. View the most recent played songs");
+			System.out.println("12. view the most frequently played songs");
+			System.out.println("13. Create a favorites leaderboard");
+			System.out.println("14. Create a TopRated leaderboard");
+			System.out.println("15. Create Genre playlist");
+			System.out.println("16. Search for songs by title");
+			System.out.println("17. Search for songs by artist");
+			System.out.println("18. Search for albums by title");
+			System.out.println("19. Search for albums by artist");
+			System.out.println("20. Search for Playlists");
+			System.out.println("21. Remove songs from the Playlist");
+			System.out.println("22. View Playlist content");
+			System.out.println("23. Show all Playlists");
+			System.out.println("24. Play a random song");
+			System.out.println("25. Shuffle song");
+			System.out.println("26. Shuffle Playlists");
+			System.out.println("27. Search for songs by genre");
+			System.out.println("28. Quit");
 			System.out.print("Please enter an option: ");
-
 			try {
 				int choice = Integer.parseInt(scanner.nextLine().trim()); // Use 'parseInt()' to handle exceptions
 				switch (choice) {
@@ -40,7 +57,26 @@ public class MusicLibraryCLI {
 				case 7 -> listAllLibraryAlbums();
 				case 8 -> listAllLibraryArtists();
 				case 9 -> addLibrarySongToPlaylist();
-				case 10 -> {
+				case 10 -> playSong();
+				case 11 -> showRecentPlays();
+				case 12 -> showMostPlayed();
+				case 13 -> showFavoritePlaylist();
+				case 14 -> showTopRatedPlaylist();
+				case 15 -> showGenrePlaylist();
+				case 16 -> searchSongByTitle();
+				case 17 -> searchSongByArtist();
+				case 18 -> searchAlbumByTitle();
+				case 19 -> searchAlbumByArtist();
+			    	case 20 -> searchPlaylistByName();
+				case 21 -> removeSongFromPlaylist();
+			    	case 22 -> viewPlaylist();
+			    	case 23 -> viewAllPlaylists();
+			    	case 24 -> playRandomSong();
+			    	case 25 -> shuffleAndPlayLibrary();
+			    	case 26 -> shuffleAndPlayPlaylist();
+			    	case 27 -> searchSongsByGenre();
+			    	case 28 ->
+				{
 					System.out.println("Good bye! Thanks for using the Music Library");
 					return;
 				}
@@ -317,6 +353,88 @@ public class MusicLibraryCLI {
 		} else {
 			System.out.println("Adding fails!");
 		}
+	}
+
+/* LA_02 New Methods */
+
+		// Play and count the number of plays
+	private void playSong() {
+	    System.out.print("Please enter the title of the song you want to play:");
+	    String songTitle = scanner.nextLine();
+	    if (library.playSong(songTitle)) {
+	        System.out.println("Successfully played the song!");
+	    } else {
+	        System.out.println("The song doesn't exist and can't be played!");
+	    }
+	}
+
+	// Show recent plays
+	private void showRecentPlays() {
+		library.generateRecentPlaysPlaylist();
+		List<song> recentList = library.getPlaylist("RecentPlays");
+		if (recentList == null || recentList.isEmpty()) {
+			System.out.println("Have no play history");
+		} else {
+			System.out.println("Recent played history:");
+			for (song s : recentList) {
+				System.out.println(s.getTitle());
+			}
+		}
+	}
+   
+	// Show most played
+	private void showMostPlayed() {
+		library.generateMostPlayedPlaylist();
+		List<song> mostPlayedList = library.getPlaylist("MostPlayed");
+		if (mostPlayedList == null || mostPlayedList.isEmpty()) {
+			System.out.println("Have no play history");
+		} else {
+			System.out.println("Most frequently played Top 10：");
+			for (song s : mostPlayedList) {
+				System.out.println(s.getTitle());
+			}
+		}
+	}
+
+	private void showFavoritePlaylist() {
+	    if (library.generateFavoritePlaylist()) {
+	        List<song> favList = library.getPlaylist("Favorites");
+	        System.out.println("Favorites (Favorite Songs with 4 or 5 Rating):");
+	        for (song s : favList) {
+	            System.out.println(s.getTitle());
+	        }
+
+	    } else {
+	        System.out.println("The Favorites list is empty and cannot be generated！");
+	    }
+	}
+
+	private void showTopRatedPlaylist() {
+	    if (library.generateTopRatedPlaylist()) {
+	        List<song> topRated = library.getPlaylist("TopRated");
+	        System.out.println("Top Rated Rankings (rating 4 and above):");
+	        for (song s : topRated) {
+	            System.out.println(s.getTitle());
+	        }
+
+	    } else {
+	        System.out.println("Top Rated playlist is empty and cannot be generated!");
+	    }
+	}
+
+	private void showGenrePlaylist() {
+	    System.out.print("Please enter the Genre：");
+	    String genre = scanner.nextLine();
+	    if (library.generateGenrePlaylist(genre)) {
+	        List<song> genreList = library.getPlaylist(genre);
+	        System.out.println("Genre Playlist【" + genre + "】:");
+	        for (song s : genreList) {
+	            System.out.println(s.getTitle());
+	        }
+
+	    } else {
+	        System.out.println("There are less than 10 songs in this genre, and cannot generate playlist!");
+	    }
 	}
 
 	public static void main(String[] args) {
