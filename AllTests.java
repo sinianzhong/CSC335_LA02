@@ -495,4 +495,50 @@ public class AllTests {
 		File file = new File("users.txt");
 		assertTrue(file.exists());
 	}
+	@Test
+	public void testGenerateMostPlayedPlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+
+		Album album = new Album("TestAlbum", "Coldplay", "Rock", 2000,
+				Arrays.asList("Clocks", "Yellow", "Viva La Vida"));
+		library.addAlbumToLibrary(album.getTitle());
+
+		library.addSongToLibrary("Clocks");
+		library.addSongToLibrary("Yellow");
+		library.addSongToLibrary("Viva La Vida");
+		library.playSong("Clocks");
+		library.playSong("Yellow");
+		library.playSong("Clocks");
+		library.playSong("Clocks");
+		library.playSong("Clocks");
+		library.generateMostPlayedPlaylist();
+
+		List<song> mostPlayed = library.getPlaylists().get("MostPlayed");
+		assertNotNull(mostPlayed);
+		assertFalse(mostPlayed.isEmpty());
+		System.out.println(mostPlayed.get(0).getTitle());
+		assertEquals("Clocks", mostPlayed.get(0).getTitle());
+	}
+
+	@Test
+	public void testGenerateRecentPlaysPlaylist() {
+		MusicStore store = new MusicStore();
+		LibraryModel library = new LibraryModel(store);
+
+		song song1 = new song("Clocks", "Coldplay", "A Rush of Blood to the Head");
+
+		library.addSongToLibrary(song1.getTitle());
+
+		library.playSong(song1.getTitle());
+
+		library.generateRecentPlaysPlaylist();
+
+		List<song> recentPlaylist = library.getPlaylists().get("RecentPlays");
+		assertNotNull(recentPlaylist);
+		assertEquals(1, recentPlaylist.size());
+
+		assertEquals("Clocks", recentPlaylist.get(0).getTitle());
+
+	}
 }
