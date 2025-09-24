@@ -1,4 +1,4 @@
-# CSC335_LA01
+# CSC335_LA02
 We are using eclipse to program underline, because we are living together.
 And then will commit them together.
 First, is Junit test part, the last 2 test for create user test can only work first time
